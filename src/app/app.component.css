@@ -1,0 +1,21 @@
+.fondo-header {
+  background-image: url("/assets/img/cielo.jpg");
+}
+
+.text-header {
+  color: white;
+  font-size: 30px;
+  font-family: "Arial Rounded MT Bold";
+  font-weight: bold;
+}
+
+.box-reserva {
+  border-color: #ef851d !important;
+  background-color: white;
+  margin: -30px;
+}
+
+.box-reserva-title {
+  font-family: "Arial";
+  font-weight: bold;
+}
