@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class BackServiceService {
+export class BackService {
 
   constructor() { }
 }

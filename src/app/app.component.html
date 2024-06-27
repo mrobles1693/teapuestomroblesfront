@@ -19,7 +19,7 @@
         <div class="row pt-3">
           <mat-form-field class="col-12 col-md-2 m-0">
             <mat-label>Tipo ruta:</mat-label>
-            <mat-select >
+            <mat-select [formControl]="fcTipoRuta">
               <mat-option [value]="1">
                 IDA Y VUELTA
               </mat-option>
@@ -30,23 +30,29 @@
           </mat-form-field>
           <mat-form-field class="col-12 col-md-2 m-0">
             <mat-label>Origen:</mat-label>
-            <mat-select >
+            <mat-select [formControl]="fcOrigen" (selectionChange)="fnChangeOrigen()">
               <mat-option [value]="1">
+                LIMA
+              </mat-option>
+              <mat-option [value]="2">
                 LIMA
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field class="col-12 col-md-2 m-0">
             <mat-label>Destino:</mat-label>
-            <mat-select >
+            <mat-select [formControl]="fcDestino" (selectionChange)="fnChangeDestino()">
               <mat-option [value]="1">
+                LIMA
+              </mat-option>
+              <mat-option [value]="2">
                 LIMA
               </mat-option>
             </mat-select>
           </mat-form-field>
           <mat-form-field class="col-12 col-md-2 m-0">
             <mat-label>Fecha / Hora:</mat-label>
-            <mat-select >
+            <mat-select [formControl]="fcProgramacion" (selectionChange)="fnChangeProgramacion()">
               <mat-option [value]="1">
                 LIMA
               </mat-option>
@@ -54,10 +60,10 @@
           </mat-form-field>
           <mat-form-field class="col-12 col-md-2 m-0">
             <mat-label>Cantidad Pax</mat-label>
-            <input matInput type="number" min="1">
+            <input matInput [formControl]="fcCantidad" type="number" min="1" (change)="fnChangeCantidad()">
           </mat-form-field>
           <div class="col-12 col-md-2 m-0">
-            <button mat-raised-button class="w-100" style="height: 56px; font-weight: bold" color="primary">RESERVAR</button>
+            <button mat-raised-button class="w-100" style="height: 56px; font-weight: bold" color="primary" [disabled]="bReservar" >RESERVAR</button>
           </div>
         </div>
       </div>
