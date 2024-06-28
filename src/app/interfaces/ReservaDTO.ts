@@ -1,7 +1,8 @@
 export interface InsReservaDTO
 {
-    nIdProgramacionVuelo : number,
-    nCantidadPax : number
+    nCantidadPax : number,
+    nIdProgramacionVueloIda : number,
+    nIdProgramacionVueloVuelta? : number,
 }
 
 export interface InsPasajeroDTO

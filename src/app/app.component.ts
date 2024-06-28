@@ -8,6 +8,7 @@ import { ProgramacionVueloDTO, searchProgramacionVueloDTO } from './interfaces/P
 import { InsReservaDTO } from './interfaces/ReservaDTO';
 import { ApiResponse } from './interfaces/ApiResponse';
 import { SqlRspDTO } from './interfaces/SqlRspDTO';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-root',
@@ -51,6 +52,7 @@ export class AppComponent {
 
   //#region LOAD DATA
   async fnLoadOrigen(){
+    this.spinner.show();
     await lastValueFrom(this.service.getListOrigen()).then(
       (res) => {
         if(res.success){
@@ -67,6 +69,7 @@ export class AppComponent {
   }
   
   async fnLoadDestino(nIdCiudadOrigen : number){
+    this.spinner.show();
     await lastValueFrom(this.service.getListDestino(nIdCiudadOrigen)).then(
       (res) => {
         if(res.success){
@@ -83,6 +86,7 @@ export class AppComponent {
   }
 
   async fnLoadProgramacionIda(search : searchProgramacionVueloDTO){
+    this.spinner.show();
     await lastValueFrom(this.service.getListProgramacion(search)).then(
       (res) => {
         if(res.success){
@@ -99,6 +103,7 @@ export class AppComponent {
   }
 
   async fnLoadProgramacionVuelta(search : searchProgramacionVueloDTO){
+    this.spinner.show();
     await lastValueFrom(this.service.getListProgramacion(search)).then(
       (res) => {
         if(res.success){
@@ -248,8 +253,9 @@ export class AppComponent {
   async fnReserva(){
     if(this.isValidFormReserva()){
       var reserva : InsReservaDTO = { 
-        nIdProgramacionVuelo : this.fcProgramacionIda.value
-        ,nCantidadPax : this.fcCantidad.value
+        nCantidadPax : this.fcCantidad.value
+        ,nIdProgramacionVueloIda : this.fcProgramacionIda.value
+        ,nIdProgramacionVueloVuelta : this.fcProgramacionVuelta.value
       }
 
       this.spinner.show();
@@ -258,6 +264,7 @@ export class AppComponent {
           if(res.success){
             this.nIdReservaIda = res.data.nCod
           }
+          this.fnMostrarRespuesta(res);
           this.spinner.hide();
         }
       ).catch(
@@ -266,25 +273,13 @@ export class AppComponent {
           console.log(err.message);
         }
       );
-
-      if(this.fcTipoRuta.value == 2){
-        reserva.nIdProgramacionVuelo = this.fcProgramacionVuelta.value;
-
-        this.spinner.show();
-        await lastValueFrom(this.service.postInsReserva(reserva)).then(
-          (res) => {
-            if(res.success){
-              this.nIdReservaVuelta = res.data.nCod
-            }
-            this.spinner.hide();
-          }
-        ).catch(
-          err => {
-            this.spinner.hide();
-            console.log(err.message);
-          }
-        );
-      }
     }
+  }
+
+  fnMostrarRespuesta(res : ApiResponse<SqlRspDTO>){
+    Swal.fire({
+      icon: res.success ? 'success' : 'error',
+      text: res.data.sMsj,
+    });
   }
 }
