@@ -7,10 +7,12 @@ import { MaterialModule } from './material/material.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
 import { HttpClientModule } from '@angular/common/http';
+import { PasajeroFormComponent } from './forms/pasajero-form/pasajero-form.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PasajeroFormComponent
   ],
   imports: [
     BrowserModule,

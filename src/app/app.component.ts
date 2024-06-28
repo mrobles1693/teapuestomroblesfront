@@ -4,8 +4,8 @@ import {BackService } from "./back-service.service";
 import {NgxSpinnerService} from "ngx-spinner";
 import { lastValueFrom } from 'rxjs';
 import { CiudadDTO } from './interfaces/CiudadDTO';
-import { ProgramacionVueloDTO, searchProgramacionVueloDTO } from './interfaces/ProgramacionVueloDTO';
-import { InsReservaDTO } from './interfaces/ReservaDTO';
+import { getPrecioProgramacioVueloDTO, ProgramacionVueloDTO, searchProgramacionVueloDTO } from './interfaces/ProgramacionVueloDTO';
+import { FormPasajeroDTO, InsReservaDTO } from './interfaces/ReservaDTO';
 import { ApiResponse } from './interfaces/ApiResponse';
 import { SqlRspDTO } from './interfaces/SqlRspDTO';
 import Swal from 'sweetalert2';
@@ -21,10 +21,11 @@ export class AppComponent {
   listDestino : CiudadDTO[] = [];
   listProgramacionIda : ProgramacionVueloDTO[] = [];
   listProgramacionVuelta : ProgramacionVueloDTO[] = [];
+
+  listFormularioPasajero : FormPasajeroDTO[] = [];
   cantDisp = 0;
 
-  nIdReservaIda : number | null = null;
-  nIdReservaVuelta : number | null = null;
+  nIdReserva : number | null = null;
 
   fcTipoRuta = new FormControl<any>(null, [Validators.required]);
   fcOrigen = new FormControl<any>(null, [Validators.required]);
@@ -32,6 +33,7 @@ export class AppComponent {
   fcProgramacionIda = new FormControl<any>(null, [Validators.required]);
   fcProgramacionVuelta = new FormControl<any>(null);
   fcCantidad = new FormControl<any>(null, [Validators.required, Validators.min(1), Validators.max(10), Validators.pattern(/^\d+$/)]);
+  fcPrecioFinal = new FormControl<any>(0);
   bReservar = true;
 
   constructor(
@@ -48,6 +50,17 @@ export class AppComponent {
     this.fcProgramacionIda.disable();
     this.fcProgramacionVuelta.disable();
     this.fcCantidad.disable();
+    this.fcPrecioFinal.disable();
+  }
+
+  fnLimpiarFormReserva(){
+    this.fcTipoRuta.setValue(null);
+    this.fcOrigen.setValue(null);
+    this.fcDestino.setValue(null);
+    this.fcProgramacionIda.setValue(null);
+    this.fcProgramacionVuelta.setValue(null);
+    this.fcCantidad.setValue(null);
+    this.fcPrecioFinal.setValue(null);
   }
 
   //#region LOAD DATA
@@ -118,6 +131,23 @@ export class AppComponent {
       }
     );
   }
+
+  async fnLoadPrecioFinal(getPrecio : getPrecioProgramacioVueloDTO){
+    this.spinner.show();
+    await lastValueFrom(this.service.getPrecioFinal(getPrecio)).then(
+      (res) => {
+        if(res.success){
+          this.fcPrecioFinal.setValue(res.data);
+        }
+        this.spinner.hide();
+      }
+    ).catch(
+      err => {
+        this.spinner.hide();
+        console.log(err.message);
+      }
+    );
+  }
   //#endregion
 
   async fnChageTipoRuta(){
@@ -125,6 +155,7 @@ export class AppComponent {
     this.fcDestino.setValue(null);
     this.fcProgramacionIda.setValue(null);
     this.fcCantidad.setValue(null);
+    this.fcPrecioFinal.setValue(null);
 
     this.fcOrigen.enable();
     this.fcDestino.disable();
@@ -146,6 +177,7 @@ export class AppComponent {
     this.fcDestino.setValue(null);
     this.fcProgramacionIda.setValue(null);
     this.fcCantidad.setValue(null);
+    this.fcPrecioFinal.setValue(null);
 
     this.fcDestino.enable();
     this.fcProgramacionIda.disable();
@@ -164,6 +196,7 @@ export class AppComponent {
   async fnChangeDestino(){
     this.fcCantidad.setValue(null);
     this.fcProgramacionIda.setValue(null);
+    this.fcPrecioFinal.setValue(null);
 
     this.fcCantidad.enable();
     this.fcProgramacionIda.disable();
@@ -178,6 +211,7 @@ export class AppComponent {
 
   async fnChangeCantidad(){
     this.fcProgramacionIda.setValue(null);
+    this.fcPrecioFinal.setValue(null);
 
     this.fcProgramacionIda.enable();
 
@@ -192,14 +226,38 @@ export class AppComponent {
       this.fcProgramacionVuelta.enable();
     }
 
+    var count = 1;
+    this.listFormularioPasajero = [];
+    while(count <= this.fcCantidad.value){
+      this.listFormularioPasajero.push({
+        nIdReservaPasajero : null,
+        fcDNI : new FormControl(null, [Validators.required, Validators.pattern(/^([0-9]){8}$/)]),
+        fcPasaporte : new FormControl(null, [Validators.required, Validators.maxLength(11)]),
+        fcApellidoP : new FormControl(null, [Validators.required]),
+        fcApellidoM : new FormControl(null, [Validators.required]),
+        fcPriNombre : new FormControl(null, [Validators.required]),
+        fcSegNombre : new FormControl(null),
+        fcCelular : new FormControl(null, [Validators.required, Validators.minLength(9), Validators.maxLength(11), Validators.pattern(/^([0-9])*$/)]),
+        fcCorreo : new FormControl(null, [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
+        fcFechaNacimiento : new FormControl(null, [Validators.required]),
+      })
+      count++;
+    }
+
     this.bReservar = true;
   }
 
   async fnChangeProgramacionIda(){
     this.bReservar = true;
+    this.fcPrecioFinal.setValue(null);
 
     if(this.fcTipoRuta.value == 1){
       this.bReservar = false;
+
+      await this.fnLoadPrecioFinal({
+        nCantidadPax : this.fcCantidad.value,
+        nIdProgramacionVueloIda : this.fcProgramacionIda.value
+      });
     }
 
     if(this.fcTipoRuta.value == 2){
@@ -215,8 +273,14 @@ export class AppComponent {
     }
   }
 
-  fnChangeProgramacionVuelta(){
+  async fnChangeProgramacionVuelta(){
     this.bReservar = false;
+
+    await this.fnLoadPrecioFinal({
+      nCantidadPax : this.fcCantidad.value,
+      nIdProgramacionVueloIda : this.fcProgramacionIda.value,
+      nIdProgramacionVueloVuelta : this.fcProgramacionVuelta.value,
+    });
   }
 
   getErrorFC(fc : FormControl, msjPattern? : string, minlengt? : number, maxlengt? : number, msjMin? : string,  msjMax? : string){
@@ -262,7 +326,8 @@ export class AppComponent {
       await lastValueFrom(this.service.postInsReserva(reserva)).then(
         (res) => {
           if(res.success){
-            this.nIdReservaIda = res.data.nCod
+            this.nIdReserva = res.data.nCod
+            this.fnIniciarFormReserva();
           }
           this.fnMostrarRespuesta(res);
           this.spinner.hide();
@@ -273,6 +338,69 @@ export class AppComponent {
           console.log(err.message);
         }
       );
+    }
+  }
+
+  async fnCancelar(){
+    this.spinner.show();
+    await lastValueFrom(this.service.cancelarReserva(this.nIdReserva!)).then(
+      (res) => {
+        if(res.success){
+          this.nIdReserva = null;
+          this.fnLimpiarFormReserva();
+          this.fnIniciarFormReserva();
+        }
+        this.fnMostrarRespuesta(res);
+        this.spinner.hide();
+      }
+    ).catch(
+      err => {
+        this.spinner.hide();
+        console.log(err.message);
+      }
+    );
+  }
+
+  async fnFinalizarReserva(){
+    var invalidPasajeros = 0;
+    var errados = 'Falta completar datos de los pasajeros: ';
+    this.listFormularioPasajero.forEach(
+      (f, i) => {
+        if(f.nIdReservaPasajero == null || f.nIdReservaPasajero == undefined) {
+          invalidPasajeros++;
+          errados += ' ' + (i+1) + ' -'
+        }
+      }
+    )
+
+    errados = errados.substring(0, errados.length-1);
+
+    if(invalidPasajeros == 0)
+    {
+      this.spinner.show();
+      await lastValueFrom(this.service.finalizarReserva(this.nIdReserva!)).then(
+        (res) => {
+          if(res.success){
+            this.nIdReserva = null;
+            this.fnLimpiarFormReserva();
+            this.fnIniciarFormReserva();
+          }
+          this.fnMostrarRespuesta(res);
+          this.spinner.hide();
+        }
+      ).catch(
+        err => {
+          this.spinner.hide();
+          console.log(err.message);
+        }
+      );
+    }
+    else
+    {
+      Swal.fire({
+        icon: 'error',
+        text: errados,
+      });
     }
   }
 

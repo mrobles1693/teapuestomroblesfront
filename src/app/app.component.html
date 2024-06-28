@@ -31,7 +31,7 @@
           </mat-form-field>
           <mat-form-field class="col-12 col-md-3 m-0">
             <mat-label>Origen:</mat-label>
-            <mat-select [formControl]="fcOrigen" (selectionChange)="fnChangeOrigen()">
+            <mat-select [formControl]="fcOrigen" (selectionChange)="fnChangeOrigen()" style="color: black;">
               <mat-option *ngFor="let origen of listOrigen" [value]="origen.nIdCiudad">
                 {{origen.sCiudad}}
               </mat-option>
@@ -40,7 +40,7 @@
           </mat-form-field>
           <mat-form-field class="col-12 col-md-3 m-0">
             <mat-label>Destino:</mat-label>
-            <mat-select [formControl]="fcDestino" (selectionChange)="fnChangeDestino()">
+            <mat-select [formControl]="fcDestino" (selectionChange)="fnChangeDestino()" style="color: black;">
               <mat-option *ngFor="let destino of listDestino" [value]="destino.nIdCiudad">
                 {{destino.sCiudad}}
               </mat-option>
@@ -49,30 +49,48 @@
           </mat-form-field>
           <mat-form-field class="col-12 col-md-3 m-0">
             <mat-label>Cantidad Pax</mat-label>
-            <input matInput [formControl]="fcCantidad" type="number" min="1" max="10" (change)="fnChangeCantidad()">
+            <input matInput [formControl]="fcCantidad" type="number" min="1" max="10" (change)="fnChangeCantidad()" style="color: black;">
             <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(fcCantidad)">{{getErrorFC(fcCantidad, 'Solo números enteros', undefined, undefined, 'Mínimo 1', 'Máximo 10')}}</mat-error>
           </mat-form-field>
-          <mat-form-field class="col-12 col-md-4 m-0">
+          <mat-form-field class="col-12 col-md-3 m-0">
             <mat-label>Ida Fecha / Hora:</mat-label>
-            <mat-select [formControl]="fcProgramacionIda" (selectionChange)="fnChangeProgramacionIda()">
+            <mat-select [formControl]="fcProgramacionIda" (selectionChange)="fnChangeProgramacionIda()" style="color: black;">
               <mat-option *ngFor="let programacion of listProgramacionIda" [value]="programacion.nIdProgramacionVuelo">
                 {{ programacion.dFechaProgramada | date : 'dd/MM/yyyy hh:mm' }}
               </mat-option>
             </mat-select>
             <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(fcProgramacionIda)">{{getErrorFC(fcProgramacionIda)}}</mat-error>
           </mat-form-field>
-          <div *ngIf="fcTipoRuta.value != 2" class="col-12 col-md-4 m-0"></div>
-          <mat-form-field *ngIf="fcTipoRuta.value == 2" class="col-12 col-md-4 m-0">
+          <div *ngIf="fcTipoRuta.value != 2" class="col-12 col-md-3 m-0"></div>
+          <mat-form-field *ngIf="fcTipoRuta.value == 2" class="col-12 col-md-3 m-0">
             <mat-label>Vuelta Fecha / Hora:</mat-label>
-            <mat-select [formControl]="fcProgramacionVuelta" (selectionChange)="fnChangeProgramacionVuelta()">
+            <mat-select [formControl]="fcProgramacionVuelta" (selectionChange)="fnChangeProgramacionVuelta()" style="color: black;">
               <mat-option *ngFor="let programacion of listProgramacionVuelta" [value]="programacion.nIdProgramacionVuelo">
                 {{ programacion.dFechaProgramada | date : 'dd/MM/yyyy hh:mm' }}
               </mat-option>
             </mat-select>
             <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(fcProgramacionVuelta)">{{getErrorFC(fcProgramacionVuelta)}}</mat-error>
           </mat-form-field>
-          <div class="col-12 col-md-4 m-0">
+          <mat-form-field class="col-12 col-md-3 m-0">
+            <mat-label>Precio</mat-label>
+            <input matInput type="number"[formControl]="fcPrecioFinal" style="color: black;">
+          </mat-form-field>
+          <div *ngIf="nIdReserva == null" class="col-12 col-md-3 m-0">
             <button mat-raised-button class="w-100" style="height: 56px; font-weight: bold" color="primary" [disabled]="bReservar" (click)="fnReserva()">RESERVAR</button>
+          </div>
+          <div *ngIf="nIdReserva" class="col-12 col-md-3 m-0">
+            <button mat-raised-button class="w-100" style="height: 56px; font-weight: bold" color="warn" [disabled]="bReservar" (click)="fnCancelar()">CANCELAR</button>
+          </div>
+        </div>
+        <mat-divider *ngIf="fcCantidad.value>0 && nIdReserva"></mat-divider>
+        <div *ngIf="fcCantidad.value>0 && nIdReserva" class="row">
+          <mat-tab-group class="pt-2">
+            <mat-tab *ngFor="let formPasajero of listFormularioPasajero; index as i" label="{{'PAX N° ' + (i+1)}}">
+              <app-pasajero-form [nIdReserva]="nIdReserva" [bPrincipal]="i==0" [formPasajero]="formPasajero"></app-pasajero-form>
+            </mat-tab>
+          </mat-tab-group>
+          <div class="col-12 m-0">
+            <button mat-raised-button class="w-100" style="font-weight: bold" color="primary" (click)="fnFinalizarReserva()">FINALIZAR RESERVA</button>
           </div>
         </div>
       </div>

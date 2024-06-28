@@ -14,8 +14,9 @@ export interface searchProgramacionVueloDTO
     nIdProgramacionVueloIda? : number
 }
 
-export interface ProgramacionVueloCantDTO
-{ 
-    nCapacidad : number,
-    nPasajeros : number,
+export interface getPrecioProgramacioVueloDTO
+{
+    nCantidadPax : number,
+    nIdProgramacionVueloIda : number,
+    nIdProgramacionVueloVuelta? : number
 }

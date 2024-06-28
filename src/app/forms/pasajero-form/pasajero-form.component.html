@@ -1,0 +1,67 @@
+<div class="py-3">
+    <div class="row m-0">
+        <mat-form-field class="col-12 col-md-6 m-0">
+            <mat-label>Tipo Documento</mat-label>
+            <mat-select [formControl]="fcTipoDocumento" (selectionChange)="fnChangeDocumento()">
+                <mat-option [value]="1">
+                  DNI
+                </mat-option>
+                <mat-option [value]="2">
+                  PASAPORTE 
+                </mat-option>
+              </mat-select>
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcDNI!)">{{getErrorFC(formPasajero?.fcDNI!)}}</mat-error>
+        </mat-form-field>
+        <div *ngIf="fcTipoDocumento.value == null" class="col-12 col-md-6 m-0"></div>
+        <mat-form-field *ngIf="fcTipoDocumento.value == 1" class="col-12 col-md-6 m-0">
+            <mat-label>DNI</mat-label>
+            <input matInput [formControl]="formPasajero?.fcDNI!" type="text" [minLength]="8" [maxlength]="8">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcDNI!)">{{getErrorFC(formPasajero?.fcDNI!, 'Solo números', 8, 8)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field *ngIf="fcTipoDocumento.value == 2" class="col-12 col-md-6 m-0">
+            <mat-label>PASAPORTE</mat-label>
+            <input matInput [formControl]="formPasajero?.fcPasaporte!" type="text" [minLength]="11" [maxlength]="11">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcPasaporte!)">{{getErrorFC(formPasajero?.fcPasaporte!, undefined, 11, 11)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-3 m-0">
+            <mat-label>APE. PATERNO</mat-label>
+            <input matInput [formControl]="formPasajero?.fcApellidoP!" type="text">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcApellidoP!)">{{getErrorFC(formPasajero?.fcApellidoP!)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-3 m-0">
+            <mat-label>APE. MATERNO</mat-label>
+            <input matInput [formControl]="formPasajero?.fcApellidoM!" type="text">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcApellidoM!)">{{getErrorFC(formPasajero?.fcApellidoM!)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-3 m-0">
+            <mat-label>PRIMER NOMBRE</mat-label>
+            <input matInput [formControl]="formPasajero?.fcPriNombre!" type="text">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcPriNombre!)">{{getErrorFC(formPasajero?.fcPriNombre!)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-3 m-0">
+            <mat-label>SEGUNDO NOMBRE</mat-label>
+            <input matInput [formControl]="formPasajero?.fcSegNombre!" type="text">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcSegNombre!)">{{getErrorFC(formPasajero?.fcSegNombre!)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-4 m-0">
+            <mat-label>CELULAR</mat-label>
+            <input matInput [formControl]="formPasajero?.fcCelular!" type="text">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcCelular!)">{{getErrorFC(formPasajero?.fcCelular!, 'Solo números', 9, 9)}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-4 m-0">
+            <mat-label>CORREO</mat-label>
+            <input matInput [formControl]="formPasajero?.fcCorreo!" type="text">
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcCorreo!)">{{getErrorFC(formPasajero?.fcCorreo!, 'Formato de correo errado')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field class="col-12 col-md-6 col-lg-4 m-0">
+            <mat-label>FECHA NACIMIENTO</mat-label>
+            <input matInput [matDatepicker]="picker" [formControl]="formPasajero?.fcFechaNacimiento!">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            <mat-error class="imb-mat-error-ng-select" *ngIf="isInvalidFc(formPasajero?.fcFechaNacimiento!)">{{getErrorFC(formPasajero?.fcFechaNacimiento!)}}</mat-error>
+        </mat-form-field>
+        <div *ngIf="formPasajero?.nIdReservaPasajero == null" class="col-12 col-md-4 m-0">
+            <button mat-raised-button class="w-100" style="height: 56px; font-weight: bold" color="primary" (click)="fnRegistrarPasajero()">REGISTRAR PASAJERO</button>
+        </div>
+    </div>
+</div>

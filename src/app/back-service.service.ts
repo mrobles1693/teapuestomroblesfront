@@ -6,7 +6,7 @@ import { SqlRspDTO } from 'src/app/interfaces/SqlRspDTO';
 import { getBackUrl } from 'src/main';
 import { CiudadDTO } from './interfaces/CiudadDTO';
 import { InsPasajeroDTO, InsReservaDTO } from './interfaces/ReservaDTO';
-import { ProgramacionVueloCantDTO, ProgramacionVueloDTO, searchProgramacionVueloDTO } from './interfaces/ProgramacionVueloDTO';
+import { getPrecioProgramacioVueloDTO, ProgramacionVueloDTO, searchProgramacionVueloDTO } from './interfaces/ProgramacionVueloDTO';
 
 @Injectable({
   providedIn: 'root'
@@ -40,16 +40,28 @@ export class BackService {
     return this.http.post<ApiResponse<ProgramacionVueloDTO[]>>(`${this.urlRuta}getListProgramacion`, elemento, {headers: httpHeader});
   }
 
-  getDisponibilidadAsientos(nIdProgramacionVuelo : number): Observable<ApiResponse<ProgramacionVueloCantDTO>>{
+  getPrecioFinal(elemento : getPrecioProgramacioVueloDTO): Observable<ApiResponse<number>>{
     const httpHeader = new HttpHeaders({'Content-type':'application/json'});
-    const httpParams = new HttpParams()
-    .append('nIdProgramacionVuelo', nIdProgramacionVuelo);
-    return this.http.get<ApiResponse<ProgramacionVueloCantDTO>>(`${this.urlRuta}getDisponibilidadAsientos`, {headers: httpHeader, params: httpParams});
+    return this.http.post<ApiResponse<number>>(`${this.urlRuta}getPrecioFinal`, elemento, {headers: httpHeader});
   }
 
   postInsReserva(elemento : InsReservaDTO): Observable<ApiResponse<SqlRspDTO>>{
     const httpHeader = new HttpHeaders({'Content-type':'application/json'});
     return this.http.post<ApiResponse<SqlRspDTO>>(`${this.urlReserva}postInsReserva`, elemento, {headers: httpHeader});
+  }
+
+  cancelarReserva(nIdReserva : number): Observable<ApiResponse<SqlRspDTO>>{
+    const httpHeader = new HttpHeaders({'Content-type':'application/json'});
+    const httpParams = new HttpParams()
+    .append('nIdReserva', nIdReserva);
+    return this.http.get<ApiResponse<SqlRspDTO>>(`${this.urlReserva}cancelarReserva`, {headers: httpHeader, params: httpParams});
+  }
+
+  finalizarReserva(nIdReserva : number): Observable<ApiResponse<SqlRspDTO>>{
+    const httpHeader = new HttpHeaders({'Content-type':'application/json'});
+    const httpParams = new HttpParams()
+    .append('nIdReserva', nIdReserva);
+    return this.http.get<ApiResponse<SqlRspDTO>>(`${this.urlReserva}finalizarReserva`, {headers: httpHeader, params: httpParams});
   }
 
   postInsPasajero(elemento : InsPasajeroDTO): Observable<ApiResponse<SqlRspDTO>>{
